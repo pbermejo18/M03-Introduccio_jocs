@@ -66,7 +66,7 @@ public class MainApp extends Application {
 
         Font theFont = Font.font("Helvetica", FontWeight.BOLD, 24);
         gc.setFont(theFont);
-        gc.setFill(Color.GREEN);
+        gc.setFill(Color.YELLOW);
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
         Sprite comecocos = new Sprite();
@@ -238,9 +238,6 @@ public class MainApp extends Application {
 
                     for (Sprite enemigo : enemigosList)
                         enemigo.render(gc);
-
-                    gc.setFill( Color.GREEN );
-                    gc.setStroke( Color.BLACK );
 
                     String pointsText = "Punts: " + (puntos.value);
                     gc.fillText(pointsText, 870, 36);
