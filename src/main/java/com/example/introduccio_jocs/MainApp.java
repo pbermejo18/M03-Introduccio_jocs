@@ -1,72 +1,265 @@
 package com.example.introduccio_jocs;
 
-import javafx.animation.TranslateTransition;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.*;
-import javafx.scene.control.Label;
-import javafx.scene.input.*;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MainApp extends Application {
-    private static final Duration TRANSLATE_DURATION = Duration.seconds(0.25);
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        Circle circle = createCircle();
-        Group group = new Group(createVidas(), createPuntos(), circle);
-        TranslateTransition transition = createTranslateTransition(circle);
-
-        Scene scene = new Scene(group, 1000, 600, Color.CORNSILK);
-        moveCircleOnMousePress(scene, circle, transition);
-
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    private Label createVidas() {
-        Label vidas = new Label("Vidas: ");
-        vidas.setTextFill(Color.FORESTGREEN);
-        return vidas;
-    }
-    private Label createPuntos() {
-        Label vidas = new Label("Puntos: ");
-        vidas.setTextFill(Color.FORESTGREEN);
-        return vidas;
-    }
-
-    private Circle createCircle() {
-        final Circle circle = new Circle(200, 150, 50, Color.BLUEVIOLET);
-        circle.setOpacity(0.7);
-        return circle;
-    }
-
-    private TranslateTransition createTranslateTransition(final Circle circle) {
-        final TranslateTransition transition = new TranslateTransition(TRANSLATE_DURATION, circle);
-        transition.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent t) {
-                circle.setCenterX(circle.getTranslateX() + circle.getCenterX());
-                circle.setCenterY(circle.getTranslateY() + circle.getCenterY());
-                circle.setTranslateX(0);
-                circle.setTranslateY(0);
-            }
-        });
-        return transition;
-    }
-
-    private void moveCircleOnMousePress(Scene scene, final Circle circle, final TranslateTransition transition) {
-        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent event) {
-                transition.setToX(event.getSceneX() - circle.getCenterX());
-                transition.setToY(event.getSceneY() - circle.getCenterY());
-                transition.playFromStart();
-            }
-        });
-    }
+    IntValue puntos = new IntValue(0);
+    IntValue vidas = new IntValue(5);
+    int nivel = 0;
+    ArrayList<Sprite> crojoList = new ArrayList<Sprite>();
+    Sprite crojo;
+    ArrayList<Sprite> enemigosList = new ArrayList<Sprite>();
+    Sprite enemigo;
+    ArrayList<Sprite> cblueList = new ArrayList<Sprite>();
+    Sprite cblue;
 
     public static void main(String[] args) { launch(args); }
+
+    @Override
+    public void start(Stage theStage) throws InterruptedException {
+        theStage.setTitle("Pol-Pac-Man");
+
+        Group root = new Group();
+        Scene theScene = new Scene(root);
+        theStage.setScene(theScene);
+
+        Canvas canvas = new Canvas(1000, 600);
+        root.getChildren().add(canvas);
+
+        ArrayList<String> input = new ArrayList<String>();
+
+        theScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent e) {
+                String code = e.getCode().toString();
+                if (!input.contains(code))
+                    input.add(code);
+            }
+        });
+
+        theScene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent e) {
+                String code = e.getCode().toString();
+                input.remove(code);
+            }
+        });
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        Font theFont = Font.font("Helvetica", FontWeight.BOLD, 24);
+        gc.setFont(theFont);
+        gc.setFill(Color.GREEN);
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(1);
+        Sprite comecocos = new Sprite();
+        comecocos.setImage("file:comecocos.png");
+        comecocos.setPosition(450, 400);
+
+        LongValue lastNanoTime = new LongValue(System.nanoTime());
+
+
+        new AnimationTimer() {
+
+            public void handle(long currentNanoTime){
+                if (vidas.value > 0) {
+                    // calculate time since last update.
+                    double elapsedTime = (currentNanoTime - lastNanoTime.value) / 1000000000.0;
+                    lastNanoTime.value = currentNanoTime;
+
+                    if (puntos.value < 5) {
+                        if (currentNanoTime % 8000 == 0) {
+                            nivel = 1;
+                            crojo = new Sprite();
+                            crojo.setImage("file:comida1.png");
+                            double px = 900 * Math.random() + 50;
+                            double py = 0;
+                            crojo.setPosition(px, py);
+                            crojoList.add(crojo);
+                        }
+                    } else if (puntos.value >= 5 && puntos.value < 20){
+                        if (currentNanoTime % 5000 == 0) {
+                            nivel = 2;
+                            crojo = new Sprite();
+                            crojo.setImage("file:comida1.png");
+                            double px = 900 * Math.random() + 50;
+                            double py = 0;
+                            crojo.setPosition(px, py);
+                            crojoList.add(crojo);
+                        }
+
+                        if (currentNanoTime % 8000 == 0) {
+                            enemigo = new Sprite();
+                            enemigo.setImage("file:enemigo.png");
+                            double px = 900 * Math.random() + 50;
+                            double py = 0;
+                            enemigo.setPosition(px, py);
+
+                            enemigosList.add(enemigo);
+                        }
+                    } else if (puntos.value >= 20 && puntos.value < 35) {
+                        if (currentNanoTime % 3000 == 0) {
+                            nivel = 3;
+                            crojo = new Sprite();
+                            crojo.setImage("file:comida1.png");
+                            double px = 900 * Math.random() + 50;
+                            double py = 0;
+                            crojo.setPosition(px, py);
+                            crojoList.add(crojo);
+                        }
+                        if (currentNanoTime % 6000 == 0) {
+                            enemigo = new Sprite();
+                            enemigo.setImage("file:enemigo.png");
+                            double px = 900 * Math.random() + 50;
+                            double py = 0;
+                            enemigo.setPosition(px, py);
+
+                            enemigosList.add(enemigo);
+                        }
+                    } else if (puntos.value >= 35 && puntos.value < 1000000) {
+                        if (currentNanoTime % 2000 == 0) {
+                            nivel = 5;
+                            crojo = new Sprite();
+                            crojo.setImage("file:comida1.png");
+                            double px = 900 * Math.random() + 50;
+                            double py = 0;
+                            crojo.setPosition(px, py);
+                            crojoList.add(crojo);
+                        }
+                        if (currentNanoTime % 2000 == 0) {
+                            cblue = new Sprite();
+                            cblue.setImage("file:comida2.png");
+                            double px = 900 * Math.random() + 50;
+                            double py = 0;
+                            cblue.setPosition(px, py);
+                            cblueList.add(cblue);
+                        }
+                        if (currentNanoTime % 4000 == 0) {
+                            enemigo = new Sprite();
+                            enemigo.setImage("file:enemigo.png");
+                            double px = 900 * Math.random() + 50;
+                            double py = 0;
+                            enemigo.setPosition(px, py);
+
+                            enemigosList.add(enemigo);
+                        }
+                    }
+                    /*
+
+                     */
+                    for (Sprite sprite : crojoList) {
+                        int vx = 0;
+                        int vy = (int) (Math.random() * 50 + 1);
+                        sprite.setVelocity(vx, vy);
+                        sprite.update(elapsedTime);
+                    }
+                    for (Sprite sprite : cblueList) {
+                        int vx = 0;
+                        int vy = (int) (Math.random() * 50 + 1);
+                        sprite.setVelocity(vx, vy);
+                        sprite.update(elapsedTime);
+                    }
+                    for (Sprite sprite : enemigosList) {
+                        int vx = 0;
+                        int vy = (int) (Math.random() * 50 + 1);
+                        sprite.setVelocity(vx, vy);
+                        sprite.update(elapsedTime);
+                    }
+
+
+                    // game logic
+                    comecocos.setVelocity(0, 0);
+                    if (input.contains("LEFT"))
+                        comecocos.addVelocity(-200, 0);
+                    if (input.contains("RIGHT"))
+                        comecocos.addVelocity(200, 0);
+                    if (input.contains("UP"))
+                        comecocos.addVelocity(0, -200);
+                    if (input.contains("DOWN"))
+                        comecocos.addVelocity(0, 200);
+
+                    comecocos.update(elapsedTime);
+
+                    // collision detection
+                    Iterator<Sprite> crojoIter = crojoList.iterator();
+                    while (crojoIter.hasNext()) {
+                        Sprite crojo = crojoIter.next();
+                        if (comecocos.intersects(crojo)) {
+                            crojoIter.remove();
+                            puntos.value++;
+                        }
+                    }
+
+                    Iterator<Sprite> enemIter = enemigosList.iterator();
+                    while (enemIter.hasNext()) {
+                        Sprite enemigo = enemIter.next();
+                        if (comecocos.intersects(enemigo)) {
+                            enemIter.remove();
+                            vidas.value--;
+                        }
+                    }
+
+                    Iterator<Sprite> cblueIter = cblueList.iterator();
+                    while (cblueIter.hasNext()) {
+                        Sprite cblue = cblueIter.next();
+                        if (comecocos.intersects(cblue)) {
+                            cblueIter.remove();
+                            puntos.value+=5;
+                        }
+                    }
+
+                    // render
+                    gc.clearRect(0, 0, 1000, 600);
+                    comecocos.render(gc);
+
+                    for (Sprite crojo : crojoList)
+                        crojo.render(gc);
+
+                    for (Sprite cblue : cblueList)
+                        cblue.render(gc);
+
+                    for (Sprite enemigo : enemigosList)
+                        enemigo.render(gc);
+
+                    gc.setFill( Color.GREEN );
+                    gc.setStroke( Color.BLACK );
+
+                    String pointsText = "Punts: " + (puntos.value);
+                    gc.fillText(pointsText, 870, 36);
+                    gc.strokeText(pointsText, 870, 36);
+
+                    String pointsTextvidas = "Vides: " + vidas.value;
+                    gc.fillText(pointsTextvidas, 30, 36);
+                    gc.strokeText(pointsTextvidas, 30, 36);
+
+                    String level = "Nivell " + nivel ;
+                    gc.fillText(level, 450, 36);
+                    gc.strokeText(level, 450, 36);
+                } else {
+                    String gameover = "GAME OVER";
+                    gc.setFill( Color.RED );
+                    gc.setStroke( Color.BLACK );
+                    Font theFont = Font.font( "Times New Roman", FontWeight.BOLD, 75 );
+                    gc.setFont( theFont );
+                    gc.fillText(gameover, 280, 300);
+                    gc.strokeText(gameover, 280, 300);
+                }
+            }
+
+        }.start();
+
+        theStage.show();
+    }
 }
