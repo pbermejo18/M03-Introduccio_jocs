@@ -7,6 +7,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -27,10 +28,14 @@ public class MainApp extends Application {
     ArrayList<Sprite> cblueList = new ArrayList<Sprite>();
     Sprite cblue;
 
+    Image space = new Image( "file:img/background.png" );
+
     public static void main(String[] args) { launch(args); }
 
     @Override
     public void start(Stage theStage) throws InterruptedException {
+        Image image = new Image("file:img/comida1.png");
+        theStage.getIcons().add(image);
         theStage.setTitle("Pol-Pac-Man");
 
         Group root = new Group();
@@ -65,7 +70,7 @@ public class MainApp extends Application {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
         Sprite comecocos = new Sprite();
-        comecocos.setImage("file:comecocos.png");
+        comecocos.setImage("file:img/comecocos.png");
         comecocos.setPosition(450, 400);
 
         LongValue lastNanoTime = new LongValue(System.nanoTime());
@@ -83,7 +88,7 @@ public class MainApp extends Application {
                         if (currentNanoTime % 8000 == 0) {
                             nivel = 1;
                             crojo = new Sprite();
-                            crojo.setImage("file:comida1.png");
+                            crojo.setImage("file:img/comida1.png");
                             double px = 900 * Math.random() + 50;
                             double py = 0;
                             crojo.setPosition(px, py);
@@ -93,7 +98,7 @@ public class MainApp extends Application {
                         if (currentNanoTime % 5000 == 0) {
                             nivel = 2;
                             crojo = new Sprite();
-                            crojo.setImage("file:comida1.png");
+                            crojo.setImage("file:img/comida1.png");
                             double px = 900 * Math.random() + 50;
                             double py = 0;
                             crojo.setPosition(px, py);
@@ -102,7 +107,7 @@ public class MainApp extends Application {
 
                         if (currentNanoTime % 8000 == 0) {
                             enemigo = new Sprite();
-                            enemigo.setImage("file:enemigo.png");
+                            enemigo.setImage("file:img/enemigo.png");
                             double px = 900 * Math.random() + 50;
                             double py = 0;
                             enemigo.setPosition(px, py);
@@ -113,7 +118,7 @@ public class MainApp extends Application {
                         if (currentNanoTime % 3000 == 0) {
                             nivel = 3;
                             crojo = new Sprite();
-                            crojo.setImage("file:comida1.png");
+                            crojo.setImage("file:img/comida1.png");
                             double px = 900 * Math.random() + 50;
                             double py = 0;
                             crojo.setPosition(px, py);
@@ -121,7 +126,7 @@ public class MainApp extends Application {
                         }
                         if (currentNanoTime % 6000 == 0) {
                             enemigo = new Sprite();
-                            enemigo.setImage("file:enemigo.png");
+                            enemigo.setImage("file:img/enemigo.png");
                             double px = 900 * Math.random() + 50;
                             double py = 0;
                             enemigo.setPosition(px, py);
@@ -132,7 +137,7 @@ public class MainApp extends Application {
                         if (currentNanoTime % 2000 == 0) {
                             nivel = 5;
                             crojo = new Sprite();
-                            crojo.setImage("file:comida1.png");
+                            crojo.setImage("file:img/comida1.png");
                             double px = 900 * Math.random() + 50;
                             double py = 0;
                             crojo.setPosition(px, py);
@@ -140,7 +145,7 @@ public class MainApp extends Application {
                         }
                         if (currentNanoTime % 2000 == 0) {
                             cblue = new Sprite();
-                            cblue.setImage("file:comida2.png");
+                            cblue.setImage("file:img/comida2.png");
                             double px = 900 * Math.random() + 50;
                             double py = 0;
                             cblue.setPosition(px, py);
@@ -148,7 +153,7 @@ public class MainApp extends Application {
                         }
                         if (currentNanoTime % 4000 == 0) {
                             enemigo = new Sprite();
-                            enemigo.setImage("file:enemigo.png");
+                            enemigo.setImage("file:img/enemigo.png");
                             double px = 900 * Math.random() + 50;
                             double py = 0;
                             enemigo.setPosition(px, py);
@@ -222,6 +227,7 @@ public class MainApp extends Application {
 
                     // render
                     gc.clearRect(0, 0, 1000, 600);
+                    gc.drawImage( space, 0, 0 );
                     comecocos.render(gc);
 
                     for (Sprite crojo : crojoList)
